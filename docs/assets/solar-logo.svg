@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img" aria-labelledby="title description">
+  <title id="title">Solar</title>
+  <desc id="description">Solar star mark and wordmark on a dark background.</desc>
+  <rect width="720" height="180" rx="8" fill="#080808"/>
+  <g transform="translate(90 90)" fill="none" stroke="#f1f1ed" stroke-linecap="square" stroke-width="8">
+    <path d="M0-48V48M-48 0H48M-34-34L34 34M34-34L-34 34"/>
+    <circle r="13" fill="#f1f1ed" stroke="none"/>
+  </g>
+  <text x="170" y="118" fill="#f1f1ed" font-family="Syncopate, Arial Black, sans-serif" font-size="74" font-weight="700" letter-spacing="8">SOLAR</text>
+</svg>

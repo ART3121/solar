@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/solar-logo.svg" alt="Solar" width="620" />
+</p>
+
 # Solar
 
 Solar is a lightweight open hardware design platform and EDA workflow
@@ -48,8 +52,8 @@ solar doctor --all
 
 The installer verifies the release archive checksum. It installs Solar and its
 private YANC bundle, but never installs or changes system EDA packages. See the
-[installation guide](docs/installation.md) for manual verification, pinned
-versions, source builds, upgrades, and uninstall instructions.
+[installation manual](https://art3121.github.io/Site-Solar/docs/#install) for
+manual verification, dependencies, upgrades, and uninstall instructions.
 
 ## Runtime tools
 
@@ -101,20 +105,20 @@ Executables, logs, scripts, and disposable work stay below `.solar/`. Solar
 records generated public files so `solar clean` never owns arbitrary user
 files.
 
-## Documentation
+## Documentation and manual
 
-- [User manual](docs/index.md)
-- [Getting started](docs/getting-started.md)
-- [Installation](docs/installation.md)
-- [Command reference](docs/command-reference.md)
-- [Project format](docs/project-format.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Primeiros passos em português](docs/pt-BR/getting-started.md)
+- [Solar website](https://art3121.github.io/Site-Solar/)
+- [User manual](https://art3121.github.io/Site-Solar/docs/)
+- [Manual em português](https://art3121.github.io/Site-Solar/docs/?lang=pt)
+- [Installation](https://art3121.github.io/Site-Solar/docs/#install)
+- [Command reference](https://art3121.github.io/Site-Solar/docs/#commands)
+- [Project configuration](https://art3121.github.io/Site-Solar/docs/#project)
+- [Troubleshooting](https://art3121.github.io/Site-Solar/docs/#troubleshooting)
 - [Architecture](docs/architecture.md)
 - [Testing and release evidence](docs/testing.md)
 
-The latest manual is published at <https://art3121.github.io/solar/>. Release
-archives also contain the documentation matching that exact version.
+The Solar website is the public entry point for documentation. Release
+archives also contain the detailed reference matching that exact binary.
 
 ## Build from source
 

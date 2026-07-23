@@ -2,7 +2,8 @@
 
 Solar accepts focused fixes and complete vertical slices that preserve the
 small native Core, thin CLI, and isolated backend boundaries described in
-`AGENTS.md`.
+[the architecture guide](docs/architecture.md) and
+[backend contract](docs/backend-contract.md).
 
 ## Before a change
 
@@ -40,8 +41,8 @@ as a pass. Real YANC evidence is separate from fake-tool orchestration tests.
 
 ## Patch expectations
 
-- Use C17 and the naming, ownership, diagnostic, and cleanup conventions in
-  `AGENTS.md`.
+- Use C17, descriptive `solar_<module>_<operation>()` public names, explicit
+  ownership, structured diagnostics, and complete cleanup on every error path.
 - Add a regression test for every behavior fix.
 - Keep tool-specific argv and output interpretation in `src/backends/`.
 - Update public documentation when behavior changes.
