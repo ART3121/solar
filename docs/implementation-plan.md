@@ -1,5 +1,28 @@
 # Solar implementation plan
 
+## Public documentation website integration (2026-07-23)
+
+### Scope and decisions
+
+- Make `ART3121/Site-Solar` the public entry point for the Solar 0.4.5 user
+  manual while keeping detailed versioned references beside the source.
+- Reuse the landing page's monochrome visual system, animated Solar mark,
+  typography, responsive navigation, theme preference, and English/PT-BR
+  language preference on a dedicated `/docs/` page.
+- Publish the site wordmark as a reusable SVG and display it in the Solar
+  README. Point the repository homepage and primary documentation links to the
+  website.
+- Keep the public source tree focused on product, contributor, and release
+  material by removing internal development-instruction files and their public
+  references.
+
+### Verification
+
+- Validate landing/manual HTML, JavaScript syntax, relative assets, desktop
+  rendering, mobile PT-BR rendering, and GitHub Pages deployment.
+- Re-run Solar's relevant documentation/package checks through protected-branch
+  CI before merging both repositories.
+
 ## Hosted launch CI compatibility corrections (2026-07-23)
 
 ### Discovery and scope
@@ -918,9 +941,9 @@ Clang is unavailable and LeakSanitizer is blocked by `ptrace`.
 
 ## Historical v0.1 foundation plan
 
-The repository initially contains only `AGENTS.md`. There is no existing build,
-source, test, example, or documentation tree to preserve. The directory is not
-currently a Git worktree.
+The initial project snapshot contained only its implementation brief. There
+was no existing build, source, test, example, or documentation tree to
+preserve, and the directory was not yet a Git worktree.
 
 Local tools discovered on 2026-07-11:
 
