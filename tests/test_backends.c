@@ -227,8 +227,8 @@ int main(int argc, char **argv)
         !contains_argument_line(record, "yosys", "/.solar/tmp/synth/synthesis.ys") ||
         strstr(script, "read_verilog -sv ") == NULL ||
         strstr(script, "/rtl/counter.sv") == NULL ||
-        strstr(script, "tee -o \"statistics.txt\"") == NULL ||
-        strstr(script, "write_verilog -noattr \"netlist.v\"") == NULL ||
+        strstr(script, "tee -o statistics.txt") == NULL ||
+        strstr(script, "write_verilog -noattr netlist.v") == NULL ||
         strstr(script, "tb/basic.v") != NULL ||
         strstr(script, project_root) == NULL) {
         (void)fprintf(

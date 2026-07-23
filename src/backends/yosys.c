@@ -124,6 +124,23 @@ static const char *path_file_name(const char *path)
     return separator == NULL ? path : separator + 1;
 }
 
+static int write_unquoted_file_name(FILE *script, const char *path)
+{
+    const unsigned char *character =
+        (const unsigned char *)path_file_name(path);
+
+    if (*character == '\0') return -1;
+    while (*character != '\0') {
+        if (isalnum(*character) == 0 && *character != '_' &&
+            *character != '-' && *character != '.') {
+            return -1;
+        }
+        if (fputc(*character, script) == EOF) return -1;
+        character++;
+    }
+    return 0;
+}
+
 static int write_yosys_commands(
     FILE *script,
     const SolarProject *project,
@@ -371,10 +388,10 @@ static int write_request_yosys_commands(
     if (fprintf(script, "hierarchy -check -top %s\n", request->top) < 0 ||
         fputs("proc\nopt\ncheck\n", script) == EOF ||
         fputs("tee -o ", script) == EOF ||
-        write_quoted(script, path_file_name(request->report_path)) != 0 ||
+        write_unquoted_file_name(script, request->report_path) != 0 ||
         fprintf(script, " stat -top %s\n", request->top) < 0 ||
         fputs("write_verilog -noattr ", script) == EOF ||
-        write_quoted(script, path_file_name(request->netlist_path)) != 0 ||
+        write_unquoted_file_name(script, request->netlist_path) != 0 ||
         fputc('\n', script) == EOF) {
         return -1;
     }

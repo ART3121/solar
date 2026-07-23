@@ -19,7 +19,9 @@
 
 1. Generate Yosys output names relative to its already isolated
    `.solar/tmp/synth` working directory, while retaining absolute source paths
-   and absolute Core artifact registration.
+   and absolute Core artifact registration. Keep those fixed safe output names
+   unquoted because older Yosys `tee` retains quote characters in option
+   values instead of normalizing them.
 2. Remove Verilator's cosmetic `--quiet-build` flag and add regression checks
    for both argv and Yosys script output paths.
 3. Keep GCC/Clang matrices on distribution tools and add one real cocotb job
