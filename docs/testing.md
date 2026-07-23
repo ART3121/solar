@@ -325,8 +325,10 @@ and a checksum-valid archive containing a symbolic link without changing the
 valid installation, and uninstalled to an empty prefix.
 The installed binary completed `scan`, `check`, `build full`, and `report` for
 the Verilog counter example and completed the real bundled-YANC CMM full flow.
-Hosted GitHub Actions and the Ubuntu 22.04 compatibility gate remain unexecuted
-until the reviewed tree is pushed.
+Hosted Ubuntu 24.04 CI then passed GCC, Clang, ASan/UBSan, package installation,
+and a real cocotb 2.x integration with Verilator 5.036. The Ubuntu 22.04
+release gate remains tag-triggered and is verified separately during release
+publication.
 
 The hosted policy keeps GCC and Clang portability matrices on Ubuntu's
 distribution EDA packages. A separate real cocotb job builds Verilator 5.036

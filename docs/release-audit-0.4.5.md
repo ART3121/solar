@@ -1,6 +1,6 @@
 # Solar 0.4.5 public release audit
 
-Audit date: 2026-07-22
+Audit date: 2026-07-22; hosted launch verification: 2026-07-23
 
 Final recommendation: **READY WITH KNOWN LIMITATIONS**
 
@@ -15,8 +15,9 @@ The release is appropriate as a stable 0.4.5 release for local, trusted
 hardware projects. It should not be presented as a security-hardened
 compiler service for hostile source input. The main residual risk is the large
 legacy C code surface in bundled YANC, which has not received exhaustive
-fuzzing. Git history was unavailable in this workspace, cocotb 2.x was absent,
-and LeakSanitizer could not run under the executor's `ptrace` policy.
+fuzzing. Local cocotb 2.x was absent and LeakSanitizer could not run under the
+executor's `ptrace` policy. A hosted real cocotb run and the remaining hosted
+Linux matrices subsequently passed during launch verification.
 
 ## 2. Current project state
 
@@ -64,10 +65,10 @@ in the bundled YANC grammars and are documented dependency warnings.
 
 | Test | Status | Reason |
 | --- | --- | --- |
-| Real Verilator+cocotb 2.x flow | SKIP | cocotb 2.x is not installed locally |
+| Real Verilator+cocotb 2.x flow | PASS hosted / SKIP local | hosted CI uses pinned Verilator 5.036; cocotb 2.x is not installed locally |
 | Full LeakSanitizer suite | SKIP | LSan aborts because this executor uses `ptrace` |
-| Git history secret scan | SKIP | exposed `.git/` contains no repository metadata |
-| Remote GitHub Actions run | SKIP | no push or hosted workflow execution was requested |
+| Earlier Git history secret scan | LIMITED | the supplied snapshot had no prior repository metadata; the newly initialized public history and tracked launch tree were scanned |
+| Remote GitHub Actions run | PASS | hosted GCC, Clang, ASan/UBSan, package, and real cocotb gates passed on Ubuntu 24.04 |
 | cppcheck/Valgrind/ShellCheck | SKIP | tools are not installed; equivalent available checks were used |
 
 Skipped checks are not counted as passes.
@@ -177,10 +178,11 @@ unsafe symlinks. Viewer launch remains explicit through `solar view`.
 - MEDIUM: bundled YANC is legacy compiler C with substantial fixed-buffer code.
   The reproduced overflow is fixed, but exhaustive fuzzing has not been done.
   Treat source inputs as trusted local project data for this release.
-- LOW: cocotb support has fake-driver coverage but no real local cocotb 2.x run.
-- LOW: Git history, tracked-file status, and prior-secret removal cannot be
-  proven from this snapshot because repository metadata is absent.
-- LOW: the new GitHub workflow is reviewed locally but has not run remotely.
+- LOW: cocotb 2.x remains unavailable locally; its real Verilator 5.036 flow
+  passed in isolated hosted CI.
+- LOW: history before the supplied source snapshot cannot be audited because
+  no earlier repository metadata existed. The newly initialized history and
+  public tracked tree were scanned before publication.
 - LOW: terminal behavior is tested with TTY/non-TTY helpers, but the project
   does not claim portability beyond Linux.
 
@@ -224,9 +226,10 @@ non-YANC suite on Ubuntu 24.04. `.github/workflows/release.yml` builds the
 x86_64 archive on Ubuntu 22.04, gates its glibc symbols, validates its checksum,
 installer rollback, examples, and uninstall, then creates a draft release from
 an existing matching tag. Workflow permissions are minimal, checkout is pinned
-to the v4.2.2 commit with credentials disabled, jobs have timeouts, and
-concurrent superseded runs are controlled. Hosted execution remains unverified
-until the repository is pushed.
+to the v7.0.1 commit with credentials disabled, jobs have timeouts, and
+concurrent superseded runs are controlled. The hosted Ubuntu 24.04 matrices,
+including the real cocotb flow, passed before creation of the release tag; the
+Ubuntu 22.04 gate remains part of the tag-triggered release procedure.
 
 ## 16. Blocking issues
 
@@ -243,9 +246,9 @@ becomes blocking and the recommendation changes to **NOT READY** for that use.
 Release Solar 0.4.5 publicly as a stable Linux x86_64 release for trusted local
 project inputs. Do not label it security-hardened or suitable for untrusted
 compiler workloads. Before a stable 1.0/security-sensitive service, run a
-fuzzing campaign over all bundled YANC frontends, obtain a real cocotb 2.x CI
-result, execute LSan outside `ptrace`, run the hosted workflow, and audit the
-actual Git history for credentials and generated artifacts.
+fuzzing campaign over all bundled YANC frontends, execute LSan outside
+`ptrace`, and continue auditing the public Git history for credentials and
+generated artifacts.
 
 ## Terminal summary
 

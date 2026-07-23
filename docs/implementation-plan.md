@@ -32,6 +32,15 @@
    hosted GCC, Clang, sanitizer, cocotb, Pages, and release workflows to finish
    successfully before tagging 0.4.5.
 
+### Completion evidence
+
+- Local focused regressions and the complete 32-test suite pass. The local
+  cocotb integration is the sole explicit skip because cocotb 2.x is absent.
+- Hosted Ubuntu 24.04 GCC, Clang, ASan/UBSan, package-install, and real cocotb
+  2.x with pinned Verilator 5.036 jobs pass after the portability corrections.
+- `actions/checkout` is pinned to v7.0.1, and CI push events are restricted to
+  `main` so a pull request does not duplicate its full matrix.
+
 ## Public launch infrastructure for Solar 0.4.5 (2026-07-23)
 
 ### Goal and release boundary
@@ -90,9 +99,9 @@
 - GCC Debug, Clang 22.1.8 Debug, and ASan/UBSan each registered 32 tests,
   passed 31, and explicitly skipped only real cocotb because it is absent.
 - Community templates, Pages-ready manuals, CI, and tag-gated draft-release
-  automation are present. Remote GitHub settings, hosted workflows, tag, and
-  release were not applied because this workspace has no usable repository
-  metadata and GitHub authentication is invalid.
+  automation are present. The public repository, Pages, Discussions, security
+  settings, dependency automation, and hosted CI are configured and verified;
+  the protected release tag and publication remain the final launch steps.
 
 ## Public release audit for Solar 0.4.5 (2026-07-22)
 
