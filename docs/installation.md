@@ -63,6 +63,9 @@ gh release verify v0.4.5 --repo ART3121/solar
 Solar installs only its own files and the private YANC 5.2 bundle. Install
 Icarus Verilog and Yosys through your distribution when using the default
 Verilog flow. Verilator, Python+cocotb, GTKWave, and Surfer are optional.
+cocotb 2.x requires Verilator 5.036 or newer; distribution packages older than
+that remain useful for Solar's native Verilator simulation but cannot run the
+cocotb 2.x driver.
 
 Examples:
 

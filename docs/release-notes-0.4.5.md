@@ -24,6 +24,7 @@ curl -fsSL https://github.com/ART3121/solar/releases/latest/download/install.sh 
 The prebuilt asset targets GNU/Linux x86_64 with glibc 2.35 or newer. It
 installs below `~/.local` without sudo and includes the private YANC bundle.
 Icarus, Yosys, Verilator, cocotb, GTKWave, and Surfer remain user-managed.
+The cocotb 2.x driver requires Verilator 5.036 or newer.
 
 Verify downloaded assets with `SHA256SUMS` and inspect optional tools with
 `solar doctor --all`.

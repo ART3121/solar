@@ -1,5 +1,35 @@
 # Solar implementation plan
 
+## Hosted launch CI compatibility corrections (2026-07-23)
+
+### Discovery and scope
+
+- The first hosted Ubuntu 24.04 run built Solar successfully but exposed two
+  backend portability gaps hidden by newer local EDA packages: packaged Yosys
+  rejected absolute `tee -o` output paths, and packaged Verilator 5.020 did
+  not recognize the optional `--quiet-build` flag.
+- The same run proved that installing cocotb 2.x beside the distribution's
+  Verilator is not a valid real integration: cocotb 2.x requires Verilator
+  5.036 or newer.
+- Correct only backend command portability and CI dependency selection. Keep
+  the manifest, public command surface, artifact paths, and ownership model
+  unchanged.
+
+### Milestones and acceptance
+
+1. Generate Yosys output names relative to its already isolated
+   `.solar/tmp/synth` working directory, while retaining absolute source paths
+   and absolute Core artifact registration.
+2. Remove Verilator's cosmetic `--quiet-build` flag and add regression checks
+   for both argv and Yosys script output paths.
+3. Keep GCC/Clang matrices on distribution tools and add one real cocotb job
+   that builds the minimum supported Verilator 5.036 from its pinned upstream
+   commit. Release compatibility tests may explicitly skip optional Verilator
+   and cocotb while the dedicated job supplies their real evidence.
+4. Rerun focused and complete local tests, push the correction, and require
+   hosted GCC, Clang, sanitizer, cocotb, Pages, and release workflows to finish
+   successfully before tagging 0.4.5.
+
 ## Public launch infrastructure for Solar 0.4.5 (2026-07-23)
 
 ### Goal and release boundary

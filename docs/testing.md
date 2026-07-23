@@ -327,3 +327,11 @@ The installed binary completed `scan`, `check`, `build full`, and `report` for
 the Verilog counter example and completed the real bundled-YANC CMM full flow.
 Hosted GitHub Actions and the Ubuntu 22.04 compatibility gate remain unexecuted
 until the reviewed tree is pushed.
+
+The hosted policy keeps GCC and Clang portability matrices on Ubuntu's
+distribution EDA packages. A separate real cocotb job builds Verilator 5.036
+from the pinned upstream commit
+`eca2b4c9603554a6a4596befd485c3dd4f550769`, because cocotb 2.x does not
+support Ubuntu 24.04's packaged Verilator 5.020. The Ubuntu 22.04 release job
+intentionally treats Verilator and cocotb as optional skips; it validates the
+release archive against Icarus, Yosys, and the bundled YANC toolchain.

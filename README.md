@@ -60,8 +60,8 @@ Install only the tools required by your flow:
 | `iverilog`, `vvp` | Icarus RTL elaboration and simulation |
 | `yosys` | Verilog synthesis |
 | bundled YANC 5.2 | CMM/C++/Assembly hardware generation |
-| `verilator` | Optional alternate RTL/simulation backend |
-| Python 3, cocotb 2.x | Optional cocotb test driver |
+| Verilator 5.x | Optional alternate RTL/simulation backend |
+| Python 3, cocotb 2.x | Optional cocotb driver; requires Verilator 5.036+ |
 | `gtkwave` or `surfer` | Optional explicit waveform viewing |
 
 Solar never downloads these tools at runtime. Missing tools are reported by

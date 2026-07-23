@@ -117,6 +117,13 @@ static bool system_verilog_path(const char *path)
     return length > 3U && strcmp(path + length - 3U, ".sv") == 0;
 }
 
+static const char *path_file_name(const char *path)
+{
+    const char *separator = strrchr(path, '/');
+
+    return separator == NULL ? path : separator + 1;
+}
+
 static int write_yosys_commands(
     FILE *script,
     const SolarProject *project,
@@ -364,10 +371,10 @@ static int write_request_yosys_commands(
     if (fprintf(script, "hierarchy -check -top %s\n", request->top) < 0 ||
         fputs("proc\nopt\ncheck\n", script) == EOF ||
         fputs("tee -o ", script) == EOF ||
-        write_quoted(script, request->report_path) != 0 ||
+        write_quoted(script, path_file_name(request->report_path)) != 0 ||
         fprintf(script, " stat -top %s\n", request->top) < 0 ||
         fputs("write_verilog -noattr ", script) == EOF ||
-        write_quoted(script, request->netlist_path) != 0 ||
+        write_quoted(script, path_file_name(request->netlist_path)) != 0 ||
         fputc('\n', script) == EOF) {
         return -1;
     }

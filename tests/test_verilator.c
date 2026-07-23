@@ -216,6 +216,7 @@ int main(int argc, char **argv)
         strstr(record_text, "\t-I/include path\t-DWIDTH=8\t") == NULL ||
         strstr(record_text, "\t/rtl path/design.v\t/tb path/design_tb.v") == NULL ||
         strstr(record_text, "\t--lint-only\t--timing\t--top-module\tdesign\t") == NULL ||
+        strstr(record_text, "--quiet-build") != NULL ||
         access(executable, X_OK) != 0 || access(waveform, R_OK) != 0) {
         (void)fprintf(
             stderr, "Verilator test failed: %s\nrecord:\n%s\n",

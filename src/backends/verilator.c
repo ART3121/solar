@@ -113,7 +113,7 @@ static SolarResult build_arguments(
     size_t *define_start_out
 )
 {
-    size_t fixed_count = 13U;
+    size_t fixed_count = 12U;
     size_t count = fixed_count + request->include_dirs.count +
         request->defines.count + request->rtl_sources.count +
         request->test_sources.count;
@@ -154,7 +154,6 @@ static SolarResult build_arguments(
     arguments[output++] = object_directory;
     arguments[output++] = "-o";
     arguments[output++] = request->executable_path;
-    arguments[output++] = "--quiet-build";
 
     *include_start_out = output;
     *define_start_out = output + request->include_dirs.count;
