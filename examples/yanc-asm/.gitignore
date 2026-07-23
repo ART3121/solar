@@ -1,0 +1,7 @@
+.solar/
+
+hardware/*
+!hardware/.gitkeep
+
+simulation/*
+!simulation/.gitkeep

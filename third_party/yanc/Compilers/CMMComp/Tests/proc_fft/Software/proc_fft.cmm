@@ -1,0 +1,123 @@
+#PRNAME proc_fft
+#NUBITS 23
+#NDSTAC 5
+#SDEPTH 5
+#NUIOIN 1
+#NUIOOU 2
+#NBMANT 16
+#NBEXPO 6
+#FFTSIZ 3
+#NUGAIN 128
+
+comp data[8];
+comp  wpv[4]; // N/2
+
+void fft(int N)
+{
+    comp temp;
+
+    int mmax = 1;
+
+    while (mmax < N)
+    {
+        int istep = mmax*2;
+        int    m  = 0;
+        int  ind  = 0;
+        int sind  = 0;
+        while (m < mmax)
+        {
+            int k = m;
+            while (k < N)
+            {
+                int j   = k+mmax;
+                temp    = wpv[sind]*data[j);
+                data[j) =   data[k) - temp;
+                data[k) =   data[k) + temp;
+                k       = k+istep;
+                ind++;
+            }
+            sind = ind;
+            m++;
+        }
+        mmax = istep;
+    }
+}
+
+void main()
+{
+    // split 0 to pi into N/2 parts
+    wpv[0] =  1.0 + 0.0i;
+    wpv[1] =  0.7071067811 + 0.7071067811i;
+    wpv[2] =  0.0 + 1.0i;
+    wpv[3] = -0.7071067811 + 0.7071067811i;
+
+    data[0] = 1.0+0.0i;
+    data[1] = 2.0+0.0i;
+    data[2] = 3.0+0.0i;
+    data[3] = 4.0+0.0i;
+    data[4] = 5.0+0.0i;
+    data[5] = 6.0+0.0i;
+    data[6] = 7.0+0.0i;
+    data[7] = 8.0+0.0i;
+
+    fft(8);
+
+    fout(0,1000.0*real(data[0)));
+    fout(1,1000.0*imag(data[0)));
+    fout(0,1000.0*real(data[1)));
+    fout(1,1000.0*imag(data[1)));
+    fout(0,1000.0*real(data[2)));
+    fout(1,1000.0*imag(data[2)));
+    fout(0,1000.0*real(data[3)));
+    fout(1,1000.0*imag(data[3)));
+    fout(0,1000.0*real(data[4)));
+    fout(1,1000.0*imag(data[4)));
+    fout(0,1000.0*real(data[5)));
+    fout(1,1000.0*imag(data[5)));
+    fout(0,1000.0*real(data[6)));
+    fout(1,1000.0*imag(data[6)));
+    fout(0,1000.0*real(data[7)));
+    fout(1,1000.0*imag(data[7)));
+/*
+    int int_abs  =       abs(-5); //   5
+    int int_absm =       abs( 3); //   3
+    int     ann  =       15 & 5;  //   5
+    int     cor  =       10 ^ 5;  //  15
+    float   i2f  =       -13   ;  // -13
+    float   i2fm =        13   ;  //  13
+    int     equ  =       3 == 3;  //   1
+    float  fabs  =    abs(-4.6);  // 4.6
+    float  fabsm =    abs( 4.7);  // 4.7
+    int     gre  =        4 > 3;  //   1
+    int     inv  =       ~(1-1);  //  -1
+    int    fgre  =      4.0 > 3;  //   1
+    int    fles  =      3.0 < 4;  //   1
+    float  fpst  = pset(  -8.0);  //   0
+    float  fpstm = pset(   8.0);  //   8
+    float  fsgn  = sign(1,-8.0);  //   8
+    int    f2im  =       2.0   ;  //   2
+    int     invm =           ~0;  //  -1
+    int     lan  =       3 && 0;  //   0
+    int     linm =           !0;  //   1
+    int     lin  =        !(-1);  //   0
+    int     lor  =       4 || 0;  //   1
+    int     neg  =       -(1+2);  //  -3
+    int     nrm  = norm(  -256);  //  -2
+    int     nrmm = norm(   256);  //   2
+    int     orr  =       31 | 0;  //  31
+    int     pst  = pset(   4-9);  //   0
+    int     pstm = pset(     7);  //   7
+    int     sgn  = sign(1,  -8);  //   8
+    int     shr  =       8 >> 2;  //   2
+    int     shl  =       2 << 2;  //   8
+    int     srs  =     -8 >>> 2;  //  -2
+
+    int   idiv =      10/3; // 3
+    int   imod =       1%3; // 1
+    float fdiv =  10.0/3.0; // 3.333...
+    float raiz = sqrt(4.0); // 2.000
+    float ata  = atan(1.1); // 0.8328
+    float sen  =  sin(1.0); // 0.8415
+
+    int   inn  = in(0); */
+}

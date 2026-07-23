@@ -1,0 +1,42 @@
+[solar]
+format = 2
+
+[project]
+name = "counter"
+language = "verilog"
+default_test = "basic"
+default_profile = "debug"
+
+[sources]
+rtl = ["rtl/counter.v"]
+include_dirs = ["rtl/include"]
+defines = ["DATA_WIDTH=4"]
+
+[simulation]
+backend = "iverilog"
+
+[synthesis]
+backend = "yosys"
+top = "counter"
+
+[[profile]]
+name = "debug"
+defines = ["DEBUG"]
+
+[[profile]]
+name = "release"
+defines = ["SYNTHESIS"]
+
+[[test]]
+name = "basic"
+top = "counter_tb"
+sources = ["tb/counter_tb.v"]
+defines = ["TEST_BASIC"]
+waveform = "basic.vcd"
+
+[[test]]
+name = "overflow"
+top = "counter_overflow_tb"
+sources = ["tb/counter_overflow_tb.v"]
+defines = ["TEST_OVERFLOW"]
+waveform = "overflow.vcd"

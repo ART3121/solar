@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Solar questions and ideas
+    url: https://github.com/ART3121/solar/discussions
+    about: Ask for help, share a project, or discuss an idea before filing a defect.
+  - name: Private vulnerability report
+    url: https://github.com/ART3121/solar/security/advisories/new
+    about: Report security-sensitive problems privately.

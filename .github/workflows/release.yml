@@ -1,0 +1,153 @@
+name: Release draft
+
+"on":
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: solar-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and draft Linux x86_64 release
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify release identity
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          test "$RELEASE_TAG" = "v0.4.5"
+          grep -F 'project(Solar VERSION 0.4.5' CMakeLists.txt
+          grep -F '#define SOLAR_VERSION "0.4.5"' include/solar/solar.h
+          grep -F 'SOLAR_RELEASE_VERSION="0.4.5"' install.sh
+          grep -F '## [0.4.5]' CHANGELOG.md
+
+      - name: Install build and integration dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends \
+            cmake make flex bison gcc clang iverilog yosys verilator \
+            python3 python3-venv file curl
+
+      - name: Install optional cocotb integration
+        run: |
+          python3 -m venv "$RUNNER_TEMP/solar-python"
+          "$RUNNER_TEMP/solar-python/bin/python" -m pip install \
+            --disable-pip-version-check 'cocotb>=2,<3'
+          echo "$RUNNER_TEMP/solar-python/bin" >> "$GITHUB_PATH"
+
+      - name: Configure and build release candidate
+        run: |
+          cmake -S . -B build-release \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr/local
+          cmake --build build-release --parallel 2
+
+      - name: Run release tests
+        run: ctest --test-dir build-release --output-on-failure
+
+      - name: Package release tree
+        run: |
+          cmake --build build-release --target package --parallel 2
+          mkdir -p dist
+          cp build-release/solar-0.4.5-linux-x86_64.tar.gz \
+            dist/solar-linux-x86_64.tar.gz
+          cp install.sh dist/install.sh
+          chmod 0755 dist/install.sh
+          cd dist
+          sha256sum solar-linux-x86_64.tar.gz install.sh > SHA256SUMS
+
+      - name: Enforce glibc 2.35 release ceiling
+        run: |
+          rm -rf "$RUNNER_TEMP/solar-payload"
+          mkdir -p "$RUNNER_TEMP/solar-payload"
+          tar -xzf dist/solar-linux-x86_64.tar.gz \
+            -C "$RUNNER_TEMP/solar-payload"
+          while IFS= read -r binary; do
+            newest=$(objdump -T "$binary" 2>/dev/null \
+              | grep -o 'GLIBC_[0-9][0-9.]*' \
+              | sort -Vu | tail -n 1 || true)
+            test -z "$newest" || \
+              test "$(printf '%s\n%s\n' "$newest" GLIBC_2.35 \
+                | sort -V | tail -n 1)" = GLIBC_2.35
+          done <<EOF
+          $RUNNER_TEMP/solar-payload/bin/solar
+          $RUNNER_TEMP/solar-payload/libexec/solar/yanc/bin/cmmcomp
+          $RUNNER_TEMP/solar-payload/libexec/solar/yanc/bin/cpppp
+          $RUNNER_TEMP/solar-payload/libexec/solar/yanc/bin/cppcomp
+          $RUNNER_TEMP/solar-payload/libexec/solar/yanc/bin/appcomp
+          $RUNNER_TEMP/solar-payload/libexec/solar/yanc/bin/asmcomp
+          EOF
+
+      - name: Exercise installer, quick start, and uninstall
+        env:
+          SOLAR_INSTALL_BASE_URL: file://${{ github.workspace }}/dist
+        run: |
+          prefix="$RUNNER_TEMP/solar-install"
+          sh dist/install.sh --version v0.4.5 --prefix "$prefix"
+          "$prefix/bin/solar" --version
+          sh dist/install.sh --version v0.4.5 --prefix "$prefix"
+          bad_release="$RUNNER_TEMP/solar-bad-release"
+          mkdir "$bad_release"
+          cp dist/solar-linux-x86_64.tar.gz "$bad_release/"
+          cp dist/SHA256SUMS "$bad_release/"
+          printf 'corruption\n' >> "$bad_release/solar-linux-x86_64.tar.gz"
+          if SOLAR_INSTALL_BASE_URL="file://$bad_release" \
+              sh dist/install.sh --version v0.4.5 --prefix "$prefix"; then
+            echo "corrupt release unexpectedly installed" >&2
+            exit 1
+          fi
+          "$prefix/bin/solar" --version
+          unsafe_release="$RUNNER_TEMP/solar-unsafe-release"
+          unsafe_payload="$RUNNER_TEMP/solar-unsafe-payload"
+          mkdir "$unsafe_release" "$unsafe_payload" "$unsafe_payload/bin"
+          ln -s /tmp "$unsafe_payload/bin/solar"
+          tar -czf "$unsafe_release/solar-linux-x86_64.tar.gz" \
+            -C "$unsafe_payload" bin
+          cd "$unsafe_release"
+          sha256sum solar-linux-x86_64.tar.gz > SHA256SUMS
+          cd "$GITHUB_WORKSPACE"
+          if SOLAR_INSTALL_BASE_URL="file://$unsafe_release" \
+              sh dist/install.sh --version v0.4.5 --prefix "$prefix"; then
+            echo "unsafe release unexpectedly installed" >&2
+            exit 1
+          fi
+          "$prefix/bin/solar" --version
+          project="$RUNNER_TEMP/solar-quick-start"
+          mkdir "$project"
+          cd "$project"
+          "$prefix/bin/solar" init
+          "$prefix/bin/solar" scan
+          "$prefix/bin/solar" check
+          "$prefix/bin/solar" build sim --no-progress
+          "$prefix/bin/solar" build synth
+          "$prefix/libexec/solar/install.sh" --prefix "$prefix" --uninstall
+          test ! -e "$prefix/bin/solar"
+          test -z "$(find "$prefix" -mindepth 1 -print -quit)"
+
+      - name: Create draft GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            dist/solar-linux-x86_64.tar.gz \
+            dist/install.sh \
+            dist/SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --draft \
+            --title "Solar 0.4.5" \
+            --notes-file docs/release-notes-0.4.5.md

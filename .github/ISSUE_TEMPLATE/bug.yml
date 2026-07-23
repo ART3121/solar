@@ -1,0 +1,61 @@
+name: Bug report
+description: Report reproducible incorrect Solar behavior
+title: "bug: "
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use Discussions for questions. Do not include proprietary HDL or security-sensitive details.
+  - type: input
+    id: version
+    attributes:
+      label: Solar version
+      description: Output of `solar --version`.
+      placeholder: solar 0.4.5
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Linux environment
+      description: Distribution, version, architecture, and installation method.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and observed result
+      description: Include the exact command, exit code, stdout, and bounded stderr.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Provide a small public manifest/source example and ordered steps.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Tool information
+      description: Relevant output from `solar doctor --all` and log paths.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I ran `solar check` and reviewed its diagnostic.
+          required: true
+        - label: I searched existing Issues and Discussions.
+          required: true
+        - label: This report contains no vulnerability or private project data.
+          required: true

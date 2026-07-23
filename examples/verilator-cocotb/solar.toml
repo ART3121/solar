@@ -1,0 +1,24 @@
+[solar]
+format = 2
+
+[project]
+name = "cocotb-adder"
+language = "verilog"
+default_test = "python"
+
+[sources]
+rtl = ["rtl/adder.v"]
+
+[simulation]
+backend = "verilator"
+
+[synthesis]
+backend = "yosys"
+top = "adder"
+
+[[test]]
+name = "python"
+top = "adder"
+driver = "cocotb"
+cocotb = "tb/test_adder.py"
+waveform = "adder.fst"

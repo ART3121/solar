@@ -1,0 +1,56 @@
+#PRNAME ArcTan
+#NUBITS 32
+#NDSTAC 5
+#SDEPTH 5
+#NUIOIN 1
+#NUIOOU 1
+#NBMANT 23
+#NBEXPO 8
+#NUGAIN 128
+
+float arctan_LUT(float x)
+{
+    float atan_lut[49] "Arctan_LUT.txt";
+    
+    float signo = x;
+    x = abs(x);
+
+    float idxf;
+    int idx;
+    float v0=0.0;
+    if (x > 1.0)
+    {
+        x = 1/x;
+        v0 = 1.57079632679;
+    }
+    
+    idxf = 47.0*x;
+    idx = idxf;
+    x = atan_lut[idx];
+    return sign(signo, v0 - (x + (atan_lut[idx+1] - x) * (idxf - idx)));
+}
+
+void main()
+{
+    float x[1000] "atan_x.txt";
+    float a[1000] "atan_y.txt";
+    float y,t,e;
+
+    int j=0;
+    while (j < 1000)
+    {
+        y = atan(x[j]);
+        t = a[j];
+        e = t - y;
+        j++;
+    }
+
+    j=0;
+    while (j < 1000)
+    {
+        y = arctan_LUT(x[j]);
+        t = a[j];
+        e = t - y;
+        j++;
+    }
+}

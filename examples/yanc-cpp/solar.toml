@@ -1,0 +1,30 @@
+[solar]
+format = 2
+
+[project]
+name = "sapho-cpp"
+language = "cpp"
+default_test = "generated"
+default_profile = "debug"
+
+[compiler]
+backend = "yanc"
+source = "software/processor.cpp"
+processor = "sapho_demo"
+frequency_mhz = 100
+simulation_clocks = 100000
+include_dirs = ["software/include"]
+
+[yanc]
+diagnostics = "pt"
+
+[simulation]
+backend = "iverilog"
+
+[synthesis]
+backend = "yosys"
+top = "sapho_demo"
+
+[[profile]]
+name = "debug"
+defines = ["YANC_DEBUG"]

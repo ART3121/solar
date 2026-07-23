@@ -1,0 +1,5 @@
+/build/
+/build-*/
+/.solar/
+**/.solar/
+/nvim.log

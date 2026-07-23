@@ -1,0 +1,92 @@
+name: CI
+
+"on":
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: solar-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.compiler }} debug
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+    env:
+      CC: ${{ matrix.compiler }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install build and integration dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends \
+            cmake make flex bison gcc clang iverilog yosys verilator \
+            python3 python3-venv
+      - name: Install optional cocotb integration
+        run: |
+          python3 -m venv "$RUNNER_TEMP/solar-python"
+          "$RUNNER_TEMP/solar-python/bin/python" -m pip install \
+            --disable-pip-version-check 'cocotb>=2,<3'
+          echo "$RUNNER_TEMP/solar-python/bin" >> "$GITHUB_PATH"
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build --parallel 2
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+      - name: Verify release installation
+        if: matrix.compiler == 'gcc'
+        run: |
+          cmake -S . -B build-release \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=OFF \
+            -DCMAKE_INSTALL_PREFIX="$RUNNER_TEMP/solar-install"
+          cmake --build build-release --parallel 2
+          cmake --install build-release
+          "$RUNNER_TEMP/solar-install/bin/solar" --version
+
+      - name: Build release archive
+        if: matrix.compiler == 'gcc'
+        run: cmake --build build-release --target package --parallel 2
+
+  sanitizers:
+    name: ASan and UBSan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install build and integration dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends \
+            cmake make flex bison gcc iverilog yosys
+      - name: Configure
+        run: |
+          cmake -S . -B build-asan \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DSOLAR_ENABLE_SANITIZERS=ON
+      - name: Build
+        run: cmake --build build-asan --parallel 2
+      - name: Test
+        run: ctest --test-dir build-asan --output-on-failure
+      - name: LeakSanitizer for Solar-owned processes
+        env:
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+        run: ctest --test-dir build-asan --output-on-failure -E yanc

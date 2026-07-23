@@ -1,0 +1,7 @@
+.solar/
+
+sim/*
+!sim/.gitkeep
+
+synth/*
+!synth/.gitkeep
